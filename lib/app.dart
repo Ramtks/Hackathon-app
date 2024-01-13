@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hackathon_app/features/authentication/bloc/authentication_bloc.dart';
+import 'package:hackathon_app/repositories/authentication_repository.dart';
+import 'package:hackathon_app/repositories/di.dart';
 import 'package:hackathon_app/utils/app_themes.dart';
 import 'package:hackathon_app/router.dart';
 
@@ -13,7 +15,8 @@ class App extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => AuthenticationBloc(),
+          create: (context) => AuthenticationBloc(
+              authRepository: getIt(), contextProvider: getIt()),
         ),
       ],
       child: MaterialApp.router(

@@ -9,9 +9,9 @@ class AppThemes {
         statusBarColor: Colors.transparent,
         statusBarBrightness: Brightness.light,
         systemNavigationBarColor: Colors.white,
-        statusBarIconBrightness: Brightness.dark,
+        statusBarIconBrightness: Brightness.light,
         systemNavigationBarDividerColor: Colors.white,
-        systemNavigationBarIconBrightness: Brightness.dark,
+        systemNavigationBarIconBrightness: Brightness.light,
       ),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(

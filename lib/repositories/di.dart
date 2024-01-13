@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hackathon_app/repositories/authentication_repository.dart';
 import 'package:hackathon_app/repositories/dio_token_interceptors.dart';
+import 'package:hackathon_app/utils/navigation_service.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hackathon_app/datasource/datasource.dart';
 
@@ -30,5 +32,13 @@ Future<void> setup() async {
     )
     ..registerSingleton<ApiInterceptor>(ApiInterceptor(dio))
     ..registerSingleton<TokenInterceptor>(TokenInterceptor(getIt()))
-    ..registerSingleton<CustomRetryInterceptor>(CustomRetryInterceptor(dio));
+    ..registerSingleton<CustomRetryInterceptor>(CustomRetryInterceptor(dio))
+    ..registerSingleton<ContextProvider>(ContextProvider());
+
+  dio.interceptors.add(getIt.get<TokenInterceptor>());
+  dio.interceptors.add(getIt.get<ApiInterceptor>());
+  // dio.interceptors.add(getIt.get<CustomRetryInterceptor>());
+  if (kDebugMode) {
+    dio.interceptors.add(getIt.get<LoggingInterceptor>());
+  }
 }

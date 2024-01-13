@@ -7,6 +7,7 @@ abstract class AuthRepository {
   Future<Either<void, RepositoriesError>> signIn(String email, String password);
   Future<Either<void, RepositoriesError>> signUp(
       String email, String name, String password);
+  Future<Either<void, RepositoriesError>> logOut();
 }
 
 class AuthRepositoryImpl implements AuthRepository {
@@ -25,15 +26,14 @@ class AuthRepositoryImpl implements AuthRepository {
         StaticVariables.signin,
         data: body,
       );
-      if (response.statusCode == 201) {
-        await _cacheHelper.saveTokenToCache(response.data['token']);
+      if (response.statusCode == 200) {
+        await _cacheHelper.saveTokenToCache(response.data['token']['access']);
         return const Left(null);
       }
       return Right(RepositoriesError(
           exception: Exception(), stackTrace: StackTrace.empty));
-    } on Exception catch (e) {
-      return Right(
-          RepositoriesError(exception: e, stackTrace: StackTrace.empty));
+    } on Exception catch (e, stackTrace) {
+      return Right(RepositoriesError(exception: e, stackTrace: stackTrace));
     }
   }
 
@@ -52,28 +52,38 @@ class AuthRepositoryImpl implements AuthRepository {
         data: body,
       );
       if (response.statusCode == 201) {
-        await _cacheHelper.saveTokenToCache(response.data['token']);
+        await _cacheHelper.saveTokenToCache(response.data['token']['access']);
         return const Left(null);
       }
       return Right(RepositoriesError(
           exception: Exception(), stackTrace: StackTrace.empty));
-    } on Exception catch (e) {
-      return Right(
-          RepositoriesError(exception: e, stackTrace: StackTrace.empty));
+    } on Exception catch (e, stackTrace) {
+      return Right(RepositoriesError(exception: e, stackTrace: stackTrace));
     }
   }
 
   @override
   Future<Either<bool, RepositoriesError>> checkIfSignedIn() async {
     try {
+      await Future.delayed(Duration(seconds: 2));
       final accessToken = await _cacheHelper.getTokenFromCache();
+      print(accessToken);
       if (accessToken == null) {
         return const Left(false);
       }
       return const Left(true);
-    } on Exception catch (e) {
-      return Right(
-          RepositoriesError(exception: e, stackTrace: StackTrace.empty));
+    } on Exception catch (e, stackTrace) {
+      return Right(RepositoriesError(exception: e, stackTrace: stackTrace));
+    }
+  }
+
+  @override
+  Future<Either<void, RepositoriesError>> logOut() async {
+    try {
+      await _cacheHelper.clearAccessTokenAndRefreshToken();
+      return const Left(null);
+    } on Exception catch (e, stackTrace) {
+      return Right(RepositoriesError(exception: e, stackTrace: stackTrace));
     }
   }
 }
